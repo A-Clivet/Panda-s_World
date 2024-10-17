@@ -17,7 +17,8 @@ public class Biome : ScriptableObject
     [Tooltip("si environement supplémentaire.")]
     public bool environment;
 
-    public float terrainVariation; // Exemple de paramètre spécifique
+    [Range(1, 100)]
+    public int terrainVariation; // Exemple de paramètre spécifique
     // Ajoutez d'autres paramètres spécifiques selon vos besoins
     
     [Tooltip("Rule Tile d'environement associé au biome.")] [CanBeNull]

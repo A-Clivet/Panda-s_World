@@ -15,6 +15,6 @@ MonoBehaviour:
   biomeName: Prairie
   threshold: 0.5
   ruleTile: {fileID: 11400000, guid: 15a5b845095f64a44b869ce707e2a20a, type: 2}
-  environment: 0
-  terrainVariation: 0
-  environmentRuleTile: {fileID: 0}
+  environment: 1
+  terrainVariation: 15
+  environmentRuleTile: {fileID: 11400000, guid: e9a0b82c2e2a00d43a410eb85b939f8c, type: 2}

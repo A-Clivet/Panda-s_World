@@ -15,6 +15,6 @@ MonoBehaviour:
   biomeName: Foret
   threshold: 0.7
   ruleTile: {fileID: 11400000, guid: 602952059963c8b41b4121bd098cdd72, type: 2}
-  environment: 1
+  environment: 0
   terrainVariation: 0
-  environmentRuleTile: {fileID: 11400000, guid: e9a0b82c2e2a00d43a410eb85b939f8c, type: 2}
+  environmentRuleTile: {fileID: 0}

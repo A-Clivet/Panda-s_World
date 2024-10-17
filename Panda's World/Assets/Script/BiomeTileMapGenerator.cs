@@ -1,12 +1,13 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
+using Random = Unity.Mathematics.Random;
 
 [ExecuteInEditMode]
 public class BiomeTilemapGenerator : MonoBehaviour
 {
     [Header("Tilemap Settings")]
-    public Tilemap tilemap; // Assignez votre Tilemap ici
+    public Tilemap tilemap; // Assignez la Tilemap ici
 
     [Header("Map Settings")]
     public int mapWidth = 100;
@@ -24,9 +25,9 @@ public class BiomeTilemapGenerator : MonoBehaviour
     [FormerlySerializedAs("lakeThreshold")]
     [Header("More Environment Settings")]
     [Range(0f, 1f)]
-    public float environmentThreshold = 0.05f; // Probabilité d'avoir un lac dans une prairie
-    public float environmentNoiseScale = 100f; // Échelle du bruit pour les lacs
-
+    public float environmentThreshold = 0.05f; // Probabilité d'avoir un un environement interne
+    public float environmentNoiseScale = 100f; // Échelle du bruit pour les environements interne
+    
     [Header("Tile Assignments")]
     public TileBase defaultTile; // Utilisé si aucun biome n'est assigné
 
@@ -72,20 +73,22 @@ public class BiomeTilemapGenerator : MonoBehaviour
                 float perlinValue = Mathf.PerlinNoise(xCoord, yCoord);
                 Biome assignedBiome = GetBiome(perlinValue);
 
-                // Vérifie si le biome possede un environement avancé
-                if (assignedBiome.environment && assignedBiome.environmentRuleTile != null)
-                {
-                    float environmentSampleX = (x / (float)mapWidth) * environmentNoiseScale + xOffset;
-                    float environmentSampleY = (y / (float)mapHeight) * environmentNoiseScale + yOffset;
-                    float environmentNoise = Mathf.PerlinNoise(environmentSampleX, environmentSampleY);
-
-                    if (environmentNoise < environmentThreshold)
-                    {
-                        tilemap.SetTile(new Vector3Int(x, y, 0), assignedBiome.environmentRuleTile);
-                        continue;
-                    }
-                }
-
+            // Vérifie si le biome possede un environement avancé
+                // if (assignedBiome.environment && assignedBiome.environmentRuleTile != null)
+                // {
+                //     float environmentSampleX = (x / (float)mapWidth) * environmentNoiseScale + xOffset;
+                //     float environmentSampleY = (y / (float)mapHeight) * environmentNoiseScale + yOffset;
+                //     float environmentNoise = Mathf.PerlinNoise(environmentSampleX, environmentSampleY);
+                //
+                //     int spawnRate = new System.Random().Next(0, 100);
+                //     if (assignedBiome.terrainVariation  >= spawnRate && environmentNoise < environmentThreshold)
+                //     {
+                //         Debug.Log(spawnRate);
+                //         tilemap.SetTile(new Vector3Int(x, y, 0), assignedBiome.environmentRuleTile);
+                //         continue;
+                //     }
+                // }
+                //
                 // Assigner le Rule Tile correspondant au biome
                 RuleTile ruleTileToSet = GetRuleTileForBiome(assignedBiome);
                 if (ruleTileToSet != null)
