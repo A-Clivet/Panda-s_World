@@ -222,4 +222,26 @@ public class BiomeTilemapGenerator : MonoBehaviour
     {
         return biome.ruleTile;
     }
+    
+    public Biome GetBiomeAtPosition(Vector2Int position)
+    {
+        int chunkX = position.x / chunkWidth;
+        int chunkY = position.y / chunkHeight;
+        Vector2Int chunkPos = new Vector2Int(chunkX, chunkY);
+
+        if (chunks.ContainsKey(chunkPos))
+        {
+            Chunk chunk = chunks[chunkPos];
+            int localX = position.x % chunkWidth;
+            int localY = position.y % chunkHeight;
+
+            float xCoord = (float)position.x / mapWidth * noiseScale + xOffset;
+            float yCoord = (float)position.y / mapHeight * noiseScale + yOffset;
+
+            float perlinValue = Mathf.PerlinNoise(xCoord, yCoord);
+            return GetBiome(perlinValue);
+        }
+
+        return null; // Return null if the chunk is not loaded
+    }
 }
