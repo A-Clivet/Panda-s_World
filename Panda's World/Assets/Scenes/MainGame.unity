@@ -152,6 +152,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea3709cc94adadc4e8ba9d2c096af888, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  biomeTileMapGenerator: {fileID: 687800779}
+  CameraBody: {fileID: 1231892141}
+  radius: 10
 --- !u!4 &285982275
 Transform:
   m_ObjectHideFlags: 0
@@ -489,5 +492,5 @@ SceneRoots:
   - {fileID: 519420032}
   - {fileID: 1231892141}
   - {fileID: 687800780}
-  - {fileID: 2112742062}
   - {fileID: 285982275}
+  - {fileID: 2112742062}

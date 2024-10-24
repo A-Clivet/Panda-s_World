@@ -228,10 +228,13 @@ public class BiomeTilemapGenerator : MonoBehaviour
         int chunkX = position.x / chunkWidth;
         int chunkY = position.y / chunkHeight;
         Vector2Int chunkPos = new Vector2Int(chunkX, chunkY);
+        Debug.Log(chunkPos);
 
         if (chunks.ContainsKey(chunkPos))
         {
+            Debug.Log("ok");
             Chunk chunk = chunks[chunkPos];
+            Debug.Log(chunk);
             int localX = position.x % chunkWidth;
             int localY = position.y % chunkHeight;
 
@@ -242,6 +245,7 @@ public class BiomeTilemapGenerator : MonoBehaviour
             return GetBiome(perlinValue);
         }
 
+        Debug.Log("echec");
         return null; // Return null if the chunk is not loaded
     }
 }

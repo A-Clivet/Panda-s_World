@@ -5,22 +5,27 @@ using UnityEngine;
 public class VillageGenerator : MonoBehaviour
 {
     public BiomeTilemapGenerator biomeTileMapGenerator; // Reference to the BiomeTileMapGenerator
-    private Vector2Int villageCenter;
+    public Transform CameraBody; // Reference to the Camera body
     public int radius = 10;
+    
+    
+    private Vector2Int villageCenter;
+
 
     // Start is called before the first frame update
     void Start()
     {
         SetRandomVillageCenter();
-        Debug.Log($"Village center is at: {villageCenter}");
-        // if (IsVillageCenterValid())
-        // {
-        //     Debug.Log("Village center is valid.");
-        // }
-        // else
-        // {
-        //     Debug.Log("Village center is invalid. It is too close to the sea.");
-        // }
+        CameraBody.transform.position = new Vector3(villageCenter.x, villageCenter.y, -10);
+        
+        if (IsVillageCenterValid())
+        {
+            Debug.Log("Village center is valid.");
+        }
+        else
+        {
+            Debug.Log("Village center is invalid. It is too close to the sea.");
+        }
     }
 
     // Update is called once per frame
@@ -36,20 +41,20 @@ public class VillageGenerator : MonoBehaviour
         villageCenter = new Vector2Int(x, y);
     }
 
-//     private bool IsVillageCenterValid()
-//     {
-//         for (int y = -radius; y <= radius; y++)
-//         {
-//             for (int x = -radius; x <= radius; x++)
-//             {
-//                 Vector2Int tilePos = new Vector2Int(villageCenter.x + x, villageCenter.y + y);
-//                 Biome biome = biomeTileMapGenerator.GetBiomeAtPosition(tilePos);
-//                 if (biome.name == "Sea")
-//                 {
-//                     return false;
-//                 }
-//             }
-//         }
-//         return true;
-//     }
+     private bool IsVillageCenterValid()
+     {
+         for (int y = -radius; y <= radius; y++)
+         {
+             for (int x = -radius; x <= radius; x++)
+             {
+                 Vector2Int tilePos = new Vector2Int(villageCenter.x + x, villageCenter.y + y);
+                 Biome biome = biomeTileMapGenerator.GetBiomeAtPosition(tilePos);
+                 if (biome.biomeName == "Mer")
+                 {
+                     return false;
+                 }
+             }
+         }
+         return true;
+     }
 }

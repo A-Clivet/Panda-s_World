@@ -7,13 +7,6 @@ public class CameraMovement : MonoBehaviour
     
     public Camera _camera;
     public float speed = 5f;
-    
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        transform.position = _camera.transform.position;
-    }
 
     // Update is called once per frame
     void Update()
