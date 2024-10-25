@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -7,16 +8,20 @@ using Random = Unity.Mathematics.Random;
 //[ExecuteInEditMode]
 public class BiomeTilemapGenerator : MonoBehaviour
 {
+    public event Action OnChunksGenerated;
+
+    
     [Header("Tilemap Settings")] public Tilemap tilemapPrefab; // Prefab de la Tilemap pour chaque chunk
     public Grid Grid; // Prefab de la Tilemap pour chaque chunk
 
-    [Header("Chunk Settings")] public int chunkWidth = 16;
+    [Header("Chunk Settings")] 
+    public int chunkWidth = 16;
     public int chunkHeight = 16;
 
     private Dictionary<Vector2Int, Chunk> chunks = new Dictionary<Vector2Int, Chunk>();
 
     [FormerlySerializedAs("unitTransform")] [Header("Unit Settings")]
-    public List<Transform> unitsTransform; // Assigné dans l'éditeur au unité
+    public List<Transform> unitsTransform; // Assigné dans l'éditeur aux unités
 
     [Header("Chunk Settings")]
     public int viewDistanceInChunks = 4; // Nombre de chunks à charger autour du joueur/caméra
@@ -31,7 +36,7 @@ public class BiomeTilemapGenerator : MonoBehaviour
     [Header("Biomes")] public Biome[] biomes; // Assigné via l'inspecteur
 
     [FormerlySerializedAs("lakeThreshold")] [Header("More Environment Settings")] [Range(0f, 1f)]
-    public float environmentThreshold = 0.05f; // Probabilité d'avoir un un environement interne
+    public float environmentThreshold = 0.05f; // Probabilité d'avoir un environement interne
 
     public float environmentNoiseScale = 100f; // Échelle du bruit pour les environements interne
 
@@ -40,6 +45,30 @@ public class BiomeTilemapGenerator : MonoBehaviour
 
     // Private variables
     private Vector2Int currentPlayerChunkPos;
+    private bool canCheckVillagePlacement = true;
+
+
+    public void FirstGeneration()
+    {
+        List<Vector2Int> playerChunkPositions = new List<Vector2Int>();
+        Transform cam = unitsTransform[0];
+        for (int i = 0; i < 1; i++)
+        {
+            // Recuper la position (du chunk) de l'unité
+            Vector2Int playerChunkPos = new Vector2Int(
+                Mathf.FloorToInt(cam.position.x / chunkWidth),
+                Mathf.FloorToInt(cam.position.y / chunkHeight)
+            );
+
+            // ajouter la position du chunk de l'unité à la liste
+            playerChunkPositions.Add(playerChunkPos);
+        }
+
+        // Mise à jour des chunks en fonction de la liste des positions des chunks des unités
+        UpdateChunks(playerChunkPositions);
+        Debug.Log("2");
+        OnChunksGenerated?.Invoke();
+    }
 
     private void Update()
     {
@@ -57,8 +86,13 @@ public class BiomeTilemapGenerator : MonoBehaviour
             playerChunkPositions.Add(playerChunkPos);
         }
 
-        // Mise à jour des chunks en fonction de la liste des positions des chunks des unté
+        // Mise à jour des chunks en fonction de la liste des positions des chunks des unités
         UpdateChunks(playerChunkPositions);
+        if (chunks.Count == (chunkWidth + 1) * (chunkHeight + 1) *2 && canCheckVillagePlacement)
+        {
+            canCheckVillagePlacement = false;
+            OnChunksGenerated?.Invoke();
+        }
     }
 
     private void UpdateChunks(List<Vector2Int> playerChunkPositions)
@@ -118,17 +152,20 @@ public class BiomeTilemapGenerator : MonoBehaviour
         }
     }
 
-    public void GenerateChunks()
-    {
-        for (int y = 0; y < mapHeight; y += chunkHeight)
-        {
-            for (int x = 0; x < mapWidth; x += chunkWidth)
-            {
-                Vector2Int chunkPos = new Vector2Int(x / chunkWidth, y / chunkHeight);
-                CreateChunk(chunkPos);
-            }
-        }
-    }
+    // Never used -----------------------------------------------------
+    // public void GenerateChunks()
+    // {
+    //     for (int y = 0; y < mapHeight; y += chunkHeight)
+    //     {
+    //         for (int x = 0; x < mapWidth; x += chunkWidth)
+    //         {
+    //             Vector2Int chunkPos = new Vector2Int(x / chunkWidth, y / chunkHeight);
+    //             CreateChunk(chunkPos);
+    //         }
+    //     }
+    //     // Notifier que les chunks ont été générés
+    //     OnChunksGenerated?.Invoke();
+    // }
 
     private void CreateChunk(Vector2Int chunkPos)
     {
@@ -223,18 +260,16 @@ public class BiomeTilemapGenerator : MonoBehaviour
         return biome.ruleTile;
     }
     
+    
     public Biome GetBiomeAtPosition(Vector2Int position)
     {
         int chunkX = position.x / chunkWidth;
         int chunkY = position.y / chunkHeight;
         Vector2Int chunkPos = new Vector2Int(chunkX, chunkY);
         Debug.Log(chunkPos);
-
         if (chunks.ContainsKey(chunkPos))
         {
-            Debug.Log("ok");
             Chunk chunk = chunks[chunkPos];
-            Debug.Log(chunk);
             int localX = position.x % chunkWidth;
             int localY = position.y % chunkHeight;
 
@@ -244,8 +279,6 @@ public class BiomeTilemapGenerator : MonoBehaviour
             float perlinValue = Mathf.PerlinNoise(xCoord, yCoord);
             return GetBiome(perlinValue);
         }
-
-        Debug.Log("echec");
         return null; // Return null if the chunk is not loaded
     }
 }

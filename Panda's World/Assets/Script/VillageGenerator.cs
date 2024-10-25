@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class VillageGenerator : MonoBehaviour
 {
@@ -11,13 +13,19 @@ public class VillageGenerator : MonoBehaviour
     
     private Vector2Int villageCenter;
 
-
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         SetRandomVillageCenter();
-        CameraBody.transform.position = new Vector3(villageCenter.x, villageCenter.y, -10);
-        
+    }
+
+    private void Start()
+    {
+        // S'abonner à l'événement OnChunksGenerated
+        biomeTileMapGenerator.OnChunksGenerated += StartVillageGenerator;
+    }
+    
+    public void StartVillageGenerator()
+    {
         if (IsVillageCenterValid())
         {
             Debug.Log("Village center is valid.");
@@ -25,13 +33,9 @@ public class VillageGenerator : MonoBehaviour
         else
         {
             Debug.Log("Village center is invalid. It is too close to the sea.");
+            SetRandomVillageCenter();
+            StartVillageGenerator();
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     private void SetRandomVillageCenter()
@@ -39,6 +43,7 @@ public class VillageGenerator : MonoBehaviour
         int x = Random.Range(3000, 13000);
         int y = Random.Range(3000, 13000);
         villageCenter = new Vector2Int(x, y);
+        CameraBody.transform.position = new Vector3(villageCenter.x, villageCenter.y, -10);
     }
 
      private bool IsVillageCenterValid()
@@ -49,7 +54,7 @@ public class VillageGenerator : MonoBehaviour
              {
                  Vector2Int tilePos = new Vector2Int(villageCenter.x + x, villageCenter.y + y);
                  Biome biome = biomeTileMapGenerator.GetBiomeAtPosition(tilePos);
-                 if (biome.biomeName == "Mer")
+                 if (biome.name == "Mer")
                  {
                      return false;
                  }
