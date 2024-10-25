@@ -279,6 +279,7 @@ public class BiomeTilemapGenerator : MonoBehaviour
             float perlinValue = Mathf.PerlinNoise(xCoord, yCoord);
             return GetBiome(perlinValue);
         }
+        Debug.Log("null");
         return null; // Return null if the chunk is not loaded
     }
 }

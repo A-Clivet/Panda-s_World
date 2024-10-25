@@ -34,6 +34,7 @@ public class VillageGenerator : MonoBehaviour
         {
             Debug.Log("Village center is invalid. It is too close to the sea.");
             SetRandomVillageCenter();
+            // attendre la régeneration des chunk
             StartVillageGenerator();
         }
     }
