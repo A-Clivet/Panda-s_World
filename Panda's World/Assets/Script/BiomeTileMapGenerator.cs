@@ -42,36 +42,17 @@ public class BiomeTilemapGenerator : MonoBehaviour
 
     [Header("Tile Assignments")] public TileBase defaultTile; // Utilisé si aucun biome n'est assigné
 
+    // Non serialized variables
+    [NonSerialized] public bool allChunksLoaded = false;
 
     // Private variables
     private Vector2Int currentPlayerChunkPos;
     private bool canCheckVillagePlacement = true;
-
-
-    public void FirstGeneration()
-    {
-        List<Vector2Int> playerChunkPositions = new List<Vector2Int>();
-        Transform cam = unitsTransform[0];
-        for (int i = 0; i < 1; i++)
-        {
-            // Recuper la position (du chunk) de l'unité
-            Vector2Int playerChunkPos = new Vector2Int(
-                Mathf.FloorToInt(cam.position.x / chunkWidth),
-                Mathf.FloorToInt(cam.position.y / chunkHeight)
-            );
-
-            // ajouter la position du chunk de l'unité à la liste
-            playerChunkPositions.Add(playerChunkPos);
-        }
-
-        // Mise à jour des chunks en fonction de la liste des positions des chunks des unités
-        UpdateChunks(playerChunkPositions);
-        Debug.Log("2");
-        OnChunksGenerated?.Invoke();
-    }
+    
 
     private void Update()
     {
+        Debug.Log(allChunksLoaded);
         List<Vector2Int> playerChunkPositions = new List<Vector2Int>();
 
         foreach (var unit in unitsTransform)
@@ -116,11 +97,13 @@ public class BiomeTilemapGenerator : MonoBehaviour
                     if (!chunks.ContainsKey(chunkPos))
                     {
                         CreateChunk(chunkPos);
+                        allChunksLoaded = false;
                     }
                     else
                     {
                         // Réactive le chunk s'il existe déjà
                         chunks[chunkPos].tilemap.gameObject.transform.parent.gameObject.SetActive(true);
+                        allChunksLoaded = true;
                     }
                 }
             }
@@ -151,21 +134,6 @@ public class BiomeTilemapGenerator : MonoBehaviour
             chunk.tilemap.gameObject.transform.parent.gameObject.SetActive(false);
         }
     }
-
-    // Never used -----------------------------------------------------
-    // public void GenerateChunks()
-    // {
-    //     for (int y = 0; y < mapHeight; y += chunkHeight)
-    //     {
-    //         for (int x = 0; x < mapWidth; x += chunkWidth)
-    //         {
-    //             Vector2Int chunkPos = new Vector2Int(x / chunkWidth, y / chunkHeight);
-    //             CreateChunk(chunkPos);
-    //         }
-    //     }
-    //     // Notifier que les chunks ont été générés
-    //     OnChunksGenerated?.Invoke();
-    // }
 
     private void CreateChunk(Vector2Int chunkPos)
     {
