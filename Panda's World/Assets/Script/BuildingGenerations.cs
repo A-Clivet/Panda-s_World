@@ -15,7 +15,6 @@ public class BuildingGenerations : MonoBehaviour
     public bool BuildingCreations(Vector2Int position, Batiment batiment = null)
     {
         batiment = maison;
-        Debug.Log("1");
         // check si il y a la place pour construire le batiment
         // verifie les tiles autour de la taille centrale du batiment selon la taille du batiment
         for (int y = -batiment.sizeY / 2; y <= batiment.sizeY / 2 + 1; y++)
