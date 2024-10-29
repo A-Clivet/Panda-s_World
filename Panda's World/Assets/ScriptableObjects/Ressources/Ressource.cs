@@ -19,8 +19,6 @@ public class Ressource : ScriptableObject
     public int pv;
     [Tooltip("Rate for bonus drop in percentage"), Range(0,100)]
     public int bonusDropRate; 
-    // [Tooltip("XXXXX"), Range(0,100)]
-    // public int resistance;
     [Tooltip("purity is a bonus value for the future"), Range(0,100)]
     public int purity;
     // -------------------------------

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -7,16 +8,20 @@ using Random = Unity.Mathematics.Random;
 //[ExecuteInEditMode]
 public class BiomeTilemapGenerator : MonoBehaviour
 {
+    public event Action OnChunksGenerated;
+
+    
     [Header("Tilemap Settings")] public Tilemap tilemapPrefab; // Prefab de la Tilemap pour chaque chunk
     public Grid Grid; // Prefab de la Tilemap pour chaque chunk
 
-    [Header("Chunk Settings")] public int chunkWidth = 16;
+    [Header("Chunk Settings")] 
+    public int chunkWidth = 16;
     public int chunkHeight = 16;
 
     private Dictionary<Vector2Int, Chunk> chunks = new Dictionary<Vector2Int, Chunk>();
 
     [FormerlySerializedAs("unitTransform")] [Header("Unit Settings")]
-    public List<Transform> unitsTransform; // Assigné dans l'éditeur au unité
+    public List<Transform> unitsTransform; // Assigné dans l'éditeur aux unités
 
     [Header("Chunk Settings")]
     public int viewDistanceInChunks = 4; // Nombre de chunks à charger autour du joueur/caméra
@@ -31,11 +36,17 @@ public class BiomeTilemapGenerator : MonoBehaviour
     [Header("Biomes")] public Biome[] biomes; // Assigné via l'inspecteur
 
     [FormerlySerializedAs("lakeThreshold")] [Header("More Environment Settings")] [Range(0f, 1f)]
-    public float environmentThreshold = 0.05f; // Probabilité d'avoir un un environement interne
+    public float environmentThreshold = 0.05f; // Probabilité d'avoir un environement interne
 
     public float environmentNoiseScale = 100f; // Échelle du bruit pour les environements interne
 
     [Header("Tile Assignments")] public TileBase defaultTile; // Utilisé si aucun biome n'est assigné
+
+    // Non serialized variables
+    [NonSerialized] public bool allChunksLoaded = false;
+    [NonSerialized] public bool villageWasBuilt = false;
+    [NonSerialized] public bool canCheckVillagePlacement = true;
+
 
 
     // Private variables
@@ -57,8 +68,17 @@ public class BiomeTilemapGenerator : MonoBehaviour
             playerChunkPositions.Add(playerChunkPos);
         }
 
-        // Mise à jour des chunks en fonction de la liste des positions des chunks des unté
+        // Mise à jour des chunks en fonction de la liste des positions des chunks des unités
         UpdateChunks(playerChunkPositions);
+        if (!villageWasBuilt)
+        {
+            if (allChunksLoaded && canCheckVillagePlacement)
+            {
+                canCheckVillagePlacement = false;
+                OnChunksGenerated?.Invoke();
+            }
+        }
+       
     }
 
     private void UpdateChunks(List<Vector2Int> playerChunkPositions)
@@ -82,11 +102,13 @@ public class BiomeTilemapGenerator : MonoBehaviour
                     if (!chunks.ContainsKey(chunkPos))
                     {
                         CreateChunk(chunkPos);
+                        allChunksLoaded = false;
                     }
                     else
                     {
                         // Réactive le chunk s'il existe déjà
                         chunks[chunkPos].tilemap.gameObject.transform.parent.gameObject.SetActive(true);
+                        allChunksLoaded = true;
                     }
                 }
             }
@@ -115,18 +137,6 @@ public class BiomeTilemapGenerator : MonoBehaviour
         {
             Chunk chunk = chunks[chunkPos];
             chunk.tilemap.gameObject.transform.parent.gameObject.SetActive(false);
-        }
-    }
-
-    public void GenerateChunks()
-    {
-        for (int y = 0; y < mapHeight; y += chunkHeight)
-        {
-            for (int x = 0; x < mapWidth; x += chunkWidth)
-            {
-                Vector2Int chunkPos = new Vector2Int(x / chunkWidth, y / chunkHeight);
-                CreateChunk(chunkPos);
-            }
         }
     }
 
@@ -221,5 +231,39 @@ public class BiomeTilemapGenerator : MonoBehaviour
     private RuleTile GetRuleTileForBiome(Biome biome)
     {
         return biome.ruleTile;
+    }
+    
+    public TileBase GetTileAtPosition(Vector2Int position)
+    {
+        //Debug.Log("3");
+        int chunkX = position.x / chunkWidth;
+        int chunkY = position.y / chunkHeight;
+        Vector2Int chunkPos = new Vector2Int(chunkX, chunkY); 
+        if (chunks.ContainsKey(chunkPos))
+        {
+            Chunk chunk = chunks[chunkPos];
+            int localX = position.x % chunkWidth;
+            int localY = position.y % chunkHeight;
+
+            TileBase tile = chunk.tilemap.GetTile(new Vector3Int(localX, localY, 0));
+
+            return tile;
+        }
+        return null; // Return null if the chunk is not loaded
+    }
+    
+    public void SetTileAtPosition(Vector2Int position, RuleTile tile)
+    {
+        int chunkX = position.x / chunkWidth;
+        int chunkY = position.y / chunkHeight;
+        Vector2Int chunkPos = new Vector2Int(chunkX, chunkY);
+
+        if (chunks.ContainsKey(chunkPos))
+        {
+            Chunk chunk = chunks[chunkPos];
+            int localX = position.x % chunkWidth;
+            int localY = position.y % chunkHeight;
+            chunk.tilemap.SetTile(new Vector3Int(localX, localY, 0), tile);
+        }
     }
 }
