@@ -44,15 +44,16 @@ public class BiomeTilemapGenerator : MonoBehaviour
 
     // Non serialized variables
     [NonSerialized] public bool allChunksLoaded = false;
+    [NonSerialized] public bool villageWasBuilt = false;
+    [NonSerialized] public bool canCheckVillagePlacement = true;
+
+
 
     // Private variables
     private Vector2Int currentPlayerChunkPos;
-    private bool canCheckVillagePlacement = true;
-    
 
     private void Update()
     {
-        Debug.Log(allChunksLoaded);
         List<Vector2Int> playerChunkPositions = new List<Vector2Int>();
 
         foreach (var unit in unitsTransform)
@@ -69,11 +70,15 @@ public class BiomeTilemapGenerator : MonoBehaviour
 
         // Mise à jour des chunks en fonction de la liste des positions des chunks des unités
         UpdateChunks(playerChunkPositions);
-        if (chunks.Count == (chunkWidth + 1) * (chunkHeight + 1) *2 && canCheckVillagePlacement)
+        if (!villageWasBuilt)
         {
-            canCheckVillagePlacement = false;
-            OnChunksGenerated?.Invoke();
+            if (allChunksLoaded && canCheckVillagePlacement)
+            {
+                canCheckVillagePlacement = false;
+                OnChunksGenerated?.Invoke();
+            }
         }
+       
     }
 
     private void UpdateChunks(List<Vector2Int> playerChunkPositions)
@@ -228,26 +233,37 @@ public class BiomeTilemapGenerator : MonoBehaviour
         return biome.ruleTile;
     }
     
-    
-    public Biome GetBiomeAtPosition(Vector2Int position)
+    public TileBase GetTileAtPosition(Vector2Int position)
     {
+        //Debug.Log("3");
         int chunkX = position.x / chunkWidth;
         int chunkY = position.y / chunkHeight;
-        Vector2Int chunkPos = new Vector2Int(chunkX, chunkY);
-        Debug.Log(chunkPos);
+        Vector2Int chunkPos = new Vector2Int(chunkX, chunkY); 
         if (chunks.ContainsKey(chunkPos))
         {
             Chunk chunk = chunks[chunkPos];
             int localX = position.x % chunkWidth;
             int localY = position.y % chunkHeight;
 
-            float xCoord = (float)position.x / mapWidth * noiseScale + xOffset;
-            float yCoord = (float)position.y / mapHeight * noiseScale + yOffset;
+            TileBase tile = chunk.tilemap.GetTile(new Vector3Int(localX, localY, 0));
 
-            float perlinValue = Mathf.PerlinNoise(xCoord, yCoord);
-            return GetBiome(perlinValue);
+            return tile;
         }
-        Debug.Log("null");
         return null; // Return null if the chunk is not loaded
+    }
+    
+    public void SetTileAtPosition(Vector2Int position, RuleTile tile)
+    {
+        int chunkX = position.x / chunkWidth;
+        int chunkY = position.y / chunkHeight;
+        Vector2Int chunkPos = new Vector2Int(chunkX, chunkY);
+
+        if (chunks.ContainsKey(chunkPos))
+        {
+            Chunk chunk = chunks[chunkPos];
+            int localX = position.x % chunkWidth;
+            int localY = position.y % chunkHeight;
+            chunk.tilemap.SetTile(new Vector3Int(localX, localY, 0), tile);
+        }
     }
 }
