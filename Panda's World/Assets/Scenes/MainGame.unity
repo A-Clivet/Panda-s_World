@@ -521,7 +521,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   biomeTileMapGenerator: {fileID: 687800779}
-  maison: {fileID: 0}
+  maison: {fileID: 11400000, guid: f7ea2e619641377448842a753f57ff8f, type: 2}
+  Route: {fileID: 11400000, guid: 6cfd41642bdf3bc4284074ef815b515a, type: 2}
   nonBuildableTiles: []
 --- !u!1 &2112742060
 GameObject:

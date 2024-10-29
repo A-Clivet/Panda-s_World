@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Route
   m_EditorClassIdentifier: 
   batimentName: 
-  ruleTile: {fileID: 0}
-  sizeX: 0
-  sizeY: 0
+  ruleTile: {fileID: 11400000, guid: a2ef651d75b53164bb6b5880e9bff8ee, type: 2}
+  sizeX: 1
+  sizeY: 1
   cost: 0
