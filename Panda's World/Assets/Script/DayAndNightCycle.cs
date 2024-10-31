@@ -28,7 +28,8 @@ public class DayAndNightCycle : MonoBehaviour
     
     void Start()
     {
-        _currentMarkIndex = 1;
+        _currentMarkIndex = -1;
+        CycleMarks();
     }
 
     void Update()
