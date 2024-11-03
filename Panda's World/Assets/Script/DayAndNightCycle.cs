@@ -16,7 +16,7 @@ public class DayAndNightCycle : MonoBehaviour
 
     
     [SerializeField] private DayAndNightMarks[] _marks;
-    [SerializeField] private float _cycleLength = 24f; // in seconds
+    [SerializeField] private float _cycleLength = 60f; // in seconds
     [SerializeField] private Light2D _light;
     
     private const float _TIME_CHECK_EPSILON = 0.1f;
@@ -35,7 +35,7 @@ public class DayAndNightCycle : MonoBehaviour
     void Update()
     {
         _currentCycleTime = (_currentCycleTime + Time.deltaTime) % _cycleLength;
-        
+        // TODO: réparer le lerp car il fonctionne pas.
         float t = (_currentCycleTime - _currentMarkTime) / _markTimeDifference;
         DayAndNightMarks cur = _marks[_currentMarkIndex];
         DayAndNightMarks next = _marks[_nextMarkIndex];
@@ -45,8 +45,8 @@ public class DayAndNightCycle : MonoBehaviour
         
         if(Mathf.Abs(_currentCycleTime - _currentMarkTime) < _TIME_CHECK_EPSILON)
         { 
-            _light.color = next.Color;
-            _light.intensity = next.Intensity;
+            // _light.color = next.Color;
+            // _light.intensity = next.Intensity;
             
             CycleMarks();
         }
