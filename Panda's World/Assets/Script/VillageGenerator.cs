@@ -19,19 +19,15 @@ public class VillageGenerator : MonoBehaviour
     private void Awake()
     {
         SetRandomVillageCenter();
-    }
-
-    private void Start()
-    {
-        // S'abonner à l'événement OnChunksGenerated
         biomeTileMapGenerator.OnChunksGenerated += StartVillageGenerator;
     }
+
+
     
     public void StartVillageGenerator()
     {
         if (IsVillageCenterValid())
         {
-            biomeTileMapGenerator.villageWasBuilt = true;
             Debug.Log("Village center is valid.");
             VillageConstruction();
             // buildingGenerations.BuildingCreations(villageCenter);
@@ -39,9 +35,9 @@ public class VillageGenerator : MonoBehaviour
         }
         else
         {
-            biomeTileMapGenerator.canCheckVillagePlacement = true;
             Debug.Log("Village center is invalid. It is too close to the sea.");
             SetRandomVillageCenter();
+            biomeTileMapGenerator.TryGenerateChunks(); // trouver une solution plus propre (via l'injection de dependances)
             StartVillageGenerator();
         }
     }

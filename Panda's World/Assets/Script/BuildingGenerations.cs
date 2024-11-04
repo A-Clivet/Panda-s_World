@@ -17,6 +17,7 @@ public class BuildingGenerations : MonoBehaviour
         batiment = maison;
         // check si il y a la place pour construire le batiment
         // verifie les tiles autour de la taille centrale du batiment selon la taille du batiment
+        //TODO: check indexes because with size 6 it's supposed to generate 3 tiles on each side, not 8
         for (int y = -batiment.sizeY / 2; y <= batiment.sizeY / 2 + 1; y++)
         {
             for (int x = -batiment.sizeX / 2; x <= batiment.sizeX / 2 + 1; x++)
