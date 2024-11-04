@@ -343,7 +343,7 @@ MonoBehaviour:
   chunkWidth: 16
   chunkHeight: 16
   unitsTransform:
-  - {fileID: 519420032}
+  - {fileID: 1231892141}
   viewDistanceInChunks: 8
   mapWidth: 256
   mapHeight: 256
@@ -679,25 +679,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _marks:
-  - timeRatio: 0.25
+  - MarkLength: 0.25
     Intensity: 1
     Color: {r: 1, g: 1, b: 1, a: 0}
-  - timeRatio: 0.375
-    Intensity: 0.95
-    Color: {r: 0.764151, g: 0.5125178, b: 0.39288896, a: 0}
-  - timeRatio: 0.625
+  - MarkLength: 0.125
+    Intensity: 1
+    Color: {r: 1, g: 1, b: 1, a: 0}
+  - MarkLength: 0.125
+    Intensity: 0.6
+    Color: {r: 0.7830189, g: 0.37192845, b: 0.22530258, a: 0}
+  - MarkLength: 0.25
     Intensity: 0.4
-    Color: {r: 0.40450338, g: 0.5165757, b: 0.8490566, a: 0}
-  - timeRatio: 0.75
-    Intensity: 0.5
-    Color: {r: 0.22414559, g: 0.34200498, b: 0.6886792, a: 0}
-  - timeRatio: 0.875
-    Intensity: 0.5
-    Color: {r: 0.9339623, g: 0.78039217, b: 0.44495374, a: 0}
-  - timeRatio: 0
-    Intensity: 0.5
-    Color: {r: 0.9622642, g: 0.8928722, b: 0.73985404, a: 0}
-  _cycleLength: 24
+    Color: {r: 0.22352943, g: 0.34117648, b: 0.6901961, a: 0}
+  - MarkLength: 0.125
+    Intensity: 0.4
+    Color: {r: 0.22352943, g: 0.34117648, b: 0.6901961, a: 0}
+  - MarkLength: 0.125
+    Intensity: 0.7
+    Color: {r: 0.8980392, g: 0.6806289, b: 0.2509804, a: 0}
+  _cycleLengthMultiplier: 60
   _light: {fileID: 2122414373}
 --- !u!114 &2122414373
 MonoBehaviour:
