@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Maison
   m_EditorClassIdentifier: 
   m_DefaultSprite: {fileID: 21300000, guid: 0bdc1f0772d1488439896404fc5922b1, type: 3}
-  m_DefaultGameObject: {fileID: 0}
+  m_DefaultGameObject: {fileID: 3748804156340350436, guid: 05b88f09c826c3d4aa4f5b7f80fafb91, type: 3}
   m_DefaultColliderType: 1
   m_TilingRules: []

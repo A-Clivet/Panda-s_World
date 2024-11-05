@@ -405,6 +405,7 @@ Transform:
   - {fileID: 687800780}
   - {fileID: 285982275}
   - {fileID: 1659005278}
+  - {fileID: 1463574958}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1231892137
@@ -453,6 +454,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1463574957
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1463574958}
+  - component: {fileID: 1463574959}
+  m_Layer: 0
+  m_Name: PandaGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1463574958
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1463574957}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 701329811}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1463574959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1463574957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6938a4ff63dcd54abd96fe03ca4287b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  villageGenerator: {fileID: 285982274}
+  pandaPrefab: {fileID: 6623729531006681700, guid: 0fe6b7eed4c3c4042a81befc35c7a711, type: 3}
+  startPandaCount: 10
 --- !u!1 &1646570805
 GameObject:
   m_ObjectHideFlags: 0
@@ -570,7 +618,7 @@ MonoBehaviour:
   Route: {fileID: 11400000, guid: 6cfd41642bdf3bc4284074ef815b515a, type: 2}
   nonBuildableTiles:
   - Maison
-  - Route
+  - Argent
 --- !u!1 &2112742060
 GameObject:
   m_ObjectHideFlags: 0

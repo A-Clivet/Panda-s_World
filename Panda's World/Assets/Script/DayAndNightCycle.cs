@@ -42,8 +42,6 @@ public class DayAndNightCycle : MonoBehaviour
         
         if(_currentCycleTime > _TIME_CHECK_EPSILON)
         { 
-            // _light.color = next.Color;
-            // _light.intensity = next.Intensity;
             CycleMarks();
         }
         // reset le currentcycletime pour éviter les erreurs de float
