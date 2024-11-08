@@ -6,9 +6,11 @@ using UnityEngine.Tilemaps;
 using Random = Unity.Mathematics.Random;
 
 //[ExecuteInEditMode]
-public class BiomeTilemapGenerator : MonoBehaviour
+public class TilemapGenerator : MonoBehaviour
 {
-    public event Action OnChunksGenerated;
+    public event Action SpawnVillage;
+    public event Action OnchunkGenerated;
+    public event Action NavMeshUpdater;
 
 
     [Header("Tilemap Settings")] public Tilemap tilemapPrefab; // Prefab de la Tilemap pour chaque chunk
@@ -45,10 +47,14 @@ public class BiomeTilemapGenerator : MonoBehaviour
     // Private variables
     private Vector2Int currentPlayerChunkPos;
 
+    
+    // --- STRUCTURES ---
+    
+    
     private void Start()
     {
         TryGenerateChunks();
-        OnChunksGenerated?.Invoke();
+        SpawnVillage?.Invoke();
     }
 
     private void Update()
@@ -114,6 +120,9 @@ public class BiomeTilemapGenerator : MonoBehaviour
         if (!chunks.ContainsKey(chunkPos))
         {
             CreateChunk(chunkPos);
+            NavMeshUpdater?.Invoke();
+            Debug.Log(NavMeshUpdater);
+            //OnchunkGenerated?.Invoke();
         }
         else
         {

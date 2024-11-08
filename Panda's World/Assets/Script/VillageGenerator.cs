@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
 
@@ -9,7 +10,7 @@ public class VillageGenerator : MonoBehaviour
 {
     public event Action<Vector2Int> VillageIsBuilt;
 
-    public BiomeTilemapGenerator biomeTileMapGenerator; // Reference to the BiomeTileMapGenerator
+    [FormerlySerializedAs("biomeTileMapGenerator")] public TilemapGenerator tileMapGenerator; // Reference to the BiomeTileMapGenerator
     public BuildingGenerations buildingGenerations;
     public Transform CameraBody; // Reference to the Camera body
     public int radius = 10;
@@ -21,7 +22,7 @@ public class VillageGenerator : MonoBehaviour
     private void Awake()
     {
         SetRandomVillageCenter();
-        biomeTileMapGenerator.OnChunksGenerated += StartVillageGenerator;
+        tileMapGenerator.SpawnVillage += StartVillageGenerator;
     }
 
 
@@ -31,13 +32,14 @@ public class VillageGenerator : MonoBehaviour
         {
             Debug.Log("Village center is valid.");
             VillageConstruction();
+            tileMapGenerator.SpawnVillage -= StartVillageGenerator;
+
         }
         else
         {
             Debug.Log("Village center is invalid. It is too close to the sea.");
             SetRandomVillageCenter();
-            biomeTileMapGenerator
-                .TryGenerateChunks(); // NEED : trouver une solution plus propre (via l'injection de dependances)
+            tileMapGenerator.TryGenerateChunks(); // NEED : trouver une solution plus propre (via l'injection de dependances)
             StartVillageGenerator();
         }
     }
@@ -57,7 +59,7 @@ public class VillageGenerator : MonoBehaviour
             for (int x = -radius; x <= radius; x++)
             {
                 Vector2Int tilePos = new Vector2Int(villageCenter.x + x, villageCenter.y + y);
-                TileBase biome = biomeTileMapGenerator.GetTileAtPosition(tilePos);
+                TileBase biome = tileMapGenerator.GetTileAtPosition(tilePos);
                 if (biome.name == "TileDeMer")
                 {
                     return false;
@@ -77,7 +79,7 @@ public class VillageGenerator : MonoBehaviour
             {
                 Vector2Int tilePos = new Vector2Int(villageCenter.x + x, villageCenter.y + y);
                 villageTiles.Add(tilePos);
-                biomeTileMapGenerator.SetTileAtPosition(tilePos, roadTile);
+                tileMapGenerator.SetTileAtPosition(tilePos, roadTile);
             }
         }
 

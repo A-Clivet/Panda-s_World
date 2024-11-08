@@ -19,7 +19,7 @@ public class PandaGenerator : MonoBehaviour
         for (int i = 0; i < startPandaCount; i++)
         {
             GameObject panda =  Instantiate (pandaPrefab, new Vector3(villageCenter.x,villageCenter.y, -1), Quaternion.identity, transform);
-            villageGenerator.biomeTileMapGenerator.unitsTransform.Add(panda.transform);
+            villageGenerator.tileMapGenerator.unitsTransform.Add(panda.transform);
         }
     }
 }

@@ -3,11 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 
 public class BuildingGenerations : MonoBehaviour
 {
-    public BiomeTilemapGenerator biomeTileMapGenerator; // Reference to the BiomeTileMapGenerator
+    [FormerlySerializedAs("biomeTileMapGenerator")] public TilemapGenerator tileMapGenerator; // Reference to the BiomeTileMapGenerator
     public Batiment maison;
     public Batiment Route;
     public List<string> nonBuildableTiles;
@@ -22,7 +23,7 @@ public class BuildingGenerations : MonoBehaviour
             for (int x = -batiment.sizeX / 2; x <= batiment.sizeX / 2 + 1; x++)
             {
                 Vector2Int tilePos = new Vector2Int(position.x + x, position.y + y);
-                TileBase tileName = biomeTileMapGenerator.GetTileAtPosition(tilePos);
+                TileBase tileName = tileMapGenerator.GetTileAtPosition(tilePos);
 
                 foreach (var name in nonBuildableTiles) 
                 {
@@ -38,22 +39,22 @@ public class BuildingGenerations : MonoBehaviour
             for (int x = -batiment.sizeX / 2; x <= batiment.sizeX / 2; x++)
             {
                 Vector2Int tilePos = new Vector2Int(position.x + x, position.y + y);
-                biomeTileMapGenerator.SetTileAtPosition(tilePos, batiment.ruleTile);
+                tileMapGenerator.SetTileAtPosition(tilePos, batiment.ruleTile);
                 if (y == -batiment.sizeY / 2)
                 {
-                    biomeTileMapGenerator.SetTileAtPosition(new Vector2Int(position.x + x, position.y + y - 1 ), Route.ruleTile);
+                    tileMapGenerator.SetTileAtPosition(new Vector2Int(position.x + x, position.y + y - 1 ), Route.ruleTile);
                 }
                 if (x == -batiment.sizeX / 2)
                 {
-                    biomeTileMapGenerator.SetTileAtPosition(new Vector2Int(position.x + x - 1, position.y + y), Route.ruleTile);
+                    tileMapGenerator.SetTileAtPosition(new Vector2Int(position.x + x - 1, position.y + y), Route.ruleTile);
                 }
                 if (y == batiment.sizeY/2)
                 {
-                    biomeTileMapGenerator.SetTileAtPosition(new Vector2Int(position.x + x, position.y + y + 1), Route.ruleTile);
+                    tileMapGenerator.SetTileAtPosition(new Vector2Int(position.x + x, position.y + y + 1), Route.ruleTile);
                 }
                 if (x == batiment.sizeX/2)
                 {
-                    biomeTileMapGenerator.SetTileAtPosition(new Vector2Int(position.x + x + 1, position.y + y), Route.ruleTile);
+                    tileMapGenerator.SetTileAtPosition(new Vector2Int(position.x + x + 1, position.y + y), Route.ruleTile);
                 }
                
             }
