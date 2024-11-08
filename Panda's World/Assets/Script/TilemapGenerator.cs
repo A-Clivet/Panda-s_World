@@ -10,8 +10,6 @@ public class TilemapGenerator : MonoBehaviour
 {
     public event Action SpawnVillage;
     public event Action OnchunkGenerated;
-    public event Action NavMeshUpdater;
-
 
     [Header("Tilemap Settings")] public Tilemap tilemapPrefab; // Prefab de la Tilemap pour chaque chunk
     public Grid Grid; // Prefab de la Tilemap pour chaque chunk
@@ -120,9 +118,7 @@ public class TilemapGenerator : MonoBehaviour
         if (!chunks.ContainsKey(chunkPos))
         {
             CreateChunk(chunkPos);
-            NavMeshUpdater?.Invoke();
-            Debug.Log(NavMeshUpdater);
-            //OnchunkGenerated?.Invoke();
+            OnchunkGenerated?.Invoke();
         }
         else
         {
