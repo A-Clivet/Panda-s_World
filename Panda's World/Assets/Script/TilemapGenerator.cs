@@ -5,7 +5,23 @@ using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 using Random = Unity.Mathematics.Random;
 
-//[ExecuteInEditMode]
+
+public class Node
+{
+    public Vector2Int Position;
+    public bool IsWalkable;
+    public Node Parent;
+    public float G, H;
+    public float F => G + H;
+
+    public Node(Vector2Int position, bool isWalkable)
+    {
+        Position = position;
+        IsWalkable = isWalkable;
+    }
+}
+
+
 public class TilemapGenerator : MonoBehaviour
 {
     public event Action SpawnVillage;
@@ -44,17 +60,43 @@ public class TilemapGenerator : MonoBehaviour
 
     // Private variables
     private Vector2Int currentPlayerChunkPos;
+    private Node[,] navigationGrid; // La grille de navigation pour A*
+    private AStarPathfinding pathfinding;
 
     
     // --- STRUCTURES ---
-    
-    
+
     private void Start()
     {
+        navigationGrid = new Node[mapWidth, mapHeight];
+        InitializeNavigationGrid();
+        pathfinding = new AStarPathfinding(navigationGrid);
         TryGenerateChunks();
         SpawnVillage?.Invoke();
     }
 
+    // Pathfinding methods ----
+    private void InitializeNavigationGrid()
+    {
+        for (int x = 0; x < mapWidth; x++)
+        {
+            for (int y = 0; y < mapHeight; y++)
+            {
+                navigationGrid[x, y] = new Node(new Vector2Int(x, y), true);
+            }
+        }
+    }
+    
+    public List<Vector2Int> GetPathForUnit(Vector2Int start, Vector2Int goal)
+    {
+        return pathfinding.FindPath(start, goal);
+    }
+    
+    // ------------------------
+
+    
+    // --- CHUNK MANAGEMENT ---
+    
     private void Update()
     {
         TryGenerateChunks();
@@ -173,38 +215,39 @@ public class TilemapGenerator : MonoBehaviour
     }
 
 
-    private void GenerateTilesForChunk(Chunk chunk)
+private void GenerateTilesForChunk(Chunk chunk)
+{
+    for (int y = 0; y < chunkHeight; y++)
     {
-        for (int y = 0; y < chunkHeight; y++)
+        for (int x = 0; x < chunkWidth; x++)
         {
-            for (int x = 0; x < chunkWidth; x++)
+            int worldX = chunk.chunkX * chunkWidth + x;
+            int worldY = chunk.chunkY * chunkHeight + y;
+
+            float xCoord = (float)worldX / mapWidth * noiseScale + xOffset;
+            float yCoord = (float)worldY / mapHeight * noiseScale + yOffset;
+
+            float perlinValue = Mathf.PerlinNoise(xCoord, yCoord);
+            Biome assignedBiome = GetBiome(perlinValue);
+
+            // Générer la tuile du biome
+            RuleTile ruleTileToSet = GetRuleTileForBiome(assignedBiome);
+            if (ruleTileToSet)
             {
-                int worldX = chunk.chunkX * chunkWidth + x;
-                int worldY = chunk.chunkY * chunkHeight + y;
-
-                float xCoord = (float)worldX / mapWidth * noiseScale + xOffset;
-                float yCoord = (float)worldY / mapHeight * noiseScale + yOffset;
-
-                float perlinValue = Mathf.PerlinNoise(xCoord, yCoord);
-                Biome assignedBiome = GetBiome(perlinValue);
-
-                // Générer la tuile du biome
-                RuleTile ruleTileToSet = GetRuleTileForBiome(assignedBiome);
-                if (ruleTileToSet)
-                {
-                    chunk.tilemap.SetTile(new Vector3Int(x, y, 0), ruleTileToSet);
-                }
-                else
-                {
-                    chunk.tilemap.SetTile(new Vector3Int(x, y, 0), defaultTile);
-                }
-
-                // Génération des ressources dans ce biome
-                TryGenerateRessource(assignedBiome, chunk.tilemap, x, y);
+                chunk.tilemap.SetTile(new Vector3Int(x, y, 0), ruleTileToSet);
+                navigationGrid[worldX, worldY].IsWalkable = true; // Marquer comme navigable
             }
+            else
+            {
+                chunk.tilemap.SetTile(new Vector3Int(x, y, 0), defaultTile);
+                navigationGrid[worldX, worldY].IsWalkable = false; // Marquer comme obstacle
+            }
+
+            // Génération des ressources dans ce biome
+            TryGenerateRessource(assignedBiome, chunk.tilemap, x, y);
         }
     }
-
+}
     private void TryGenerateRessource(Biome biome, Tilemap tilemap, int x, int y)
     {
         foreach (Ressource ressource in biome.ressources)
