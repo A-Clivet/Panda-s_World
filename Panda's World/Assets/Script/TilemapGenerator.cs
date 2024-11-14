@@ -41,7 +41,8 @@ public class TilemapGenerator : MonoBehaviour
     [Header("Chunk Settings")]
     public int viewDistanceInChunks = 4; // Nombre de chunks à charger autour du joueur/caméra
 
-    [Header("Map Settings")] public int mapWidth = 100;
+    [Header("Map Settings")] 
+    public int mapWidth = 100;
     public int mapHeight = 100;
     [Range(1f, 100f)] public float noiseScale = 20f; // Contrôle la taille des zones
 
@@ -160,7 +161,7 @@ public class TilemapGenerator : MonoBehaviour
         if (!chunks.ContainsKey(chunkPos))
         {
             CreateChunk(chunkPos);
-            OnchunkGenerated?.Invoke();
+            //OnchunkGenerated?.Invoke(); //ne sert a rien pour l'instant
         }
         else
         {
@@ -178,6 +179,8 @@ public class TilemapGenerator : MonoBehaviour
             UnloadChunk(loadedChunk);
         }
     }
+
+
     private void UnloadChunk(Vector2Int chunkPos)
     {
         // Désactiver le GameObject du chunk
@@ -230,6 +233,8 @@ private void GenerateTilesForChunk(Chunk chunk)
             float perlinValue = Mathf.PerlinNoise(xCoord, yCoord);
             Biome assignedBiome = GetBiome(perlinValue);
 
+            // TODO: les lignes navigationGrid causent une erreur qui empêche de lancer le jeu -------------------------------------------
+            
             // Générer la tuile du biome
             RuleTile ruleTileToSet = GetRuleTileForBiome(assignedBiome);
             if (ruleTileToSet)

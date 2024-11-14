@@ -16,3 +16,4 @@ MonoBehaviour:
   threshold: 0.7
   ruleTile: {fileID: 11400000, guid: 602952059963c8b41b4121bd098cdd72, type: 2}
   ressources: []
+  isWalkable: 1

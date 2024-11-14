@@ -28,5 +28,8 @@ public class Biome : ScriptableObject
     
     [Header("Ressources")]
     public Ressource[] ressources; // Liste des ressources associées à ce biome
-    
+
+    [Header("isWalkable")]
+    public bool isWalkable;
+
 }
