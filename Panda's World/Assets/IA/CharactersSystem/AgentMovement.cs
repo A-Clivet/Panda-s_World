@@ -1,45 +1,36 @@
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class AgentMovement : MonoBehaviour
 {
-    private Vector3 targetPosition;
-    private bool hasTarget = false;
-    private Vector2Int target;
     public float speed = 5f;
+    private List<Vector2Int> path;
+    private int currentPathIndex;
+    private TilemapGenerator tilemapGenerator;
 
-
-    void Start()
+    private void Start()
     {
-        target = new Vector2Int((int)transform.position.x + 5, (int)transform.position.y);
-      
+        tilemapGenerator = FindObjectOfType<TilemapGenerator>();
     }
 
-    void Update()
+    private void Update()
     {
-        // if (Input.GetMouseButtonDown(0)) // Detect left mouse click
-        // {
-        //     Debug.Log("Clic de souris détecté.");
-        //     Vector2 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //     RaycastHit2D hit = Physics2D.Raycast(clickPosition, Vector2.zero);
-        //     if (hit.collider != null)
-        //     {
-        //         targetPosition = hit.point;
-        //         hasTarget = true;
-        //     }
-        //     else
-        //     {
-        //         Debug.Log("Le raycast n'a touché aucun collider.");
-        //     }
-        //}
-        //
-        // if (hasTarget)
-        // {
-        //     
-        // }
-        
-        Vector3 direction = new Vector3(target.x, target.y, 0) - transform.position;
-        transform.position += direction * (speed * Time.deltaTime);
-        
+        if (path != null && currentPathIndex < path.Count)
+        {
+            Vector3 targetPosition = new Vector3(path[currentPathIndex].x, path[currentPathIndex].y, transform.position.z);
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+
+            if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
+            {
+                currentPathIndex++;
+            }
+        }
+    }
+
+    public void SetDestination(Vector2Int destination)
+    {
+        Vector2Int start = new Vector2Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y));
+        path = tilemapGenerator.GetPathForUnit(start, destination);
+        currentPathIndex = 0;
     }
 }

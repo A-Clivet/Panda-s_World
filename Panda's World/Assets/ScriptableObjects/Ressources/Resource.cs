@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Ressource", menuName = "Ressource")]
-public class Ressource : ScriptableObject
+public class Resource : ScriptableObject
 {
     [Tooltip("Nom de la Ressource.")]
     public string ressourceName;

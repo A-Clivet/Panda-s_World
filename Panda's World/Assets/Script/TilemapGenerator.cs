@@ -27,10 +27,12 @@ public class TilemapGenerator : MonoBehaviour
     public event Action SpawnVillage;
     public event Action OnchunkGenerated;
 
-    [Header("Tilemap Settings")] public Tilemap tilemapPrefab; // Prefab de la Tilemap pour chaque chunk
+    [Header("Tilemap Settings")] 
+    public Tilemap tilemapPrefab; // Prefab de la Tilemap pour chaque chunk
     public Grid Grid; // Prefab de la Tilemap pour chaque chunk
 
-    [Header("Chunk Settings")] public int chunkWidth = 16;
+    [Header("Chunk Settings")] 
+    public int chunkWidth = 16;
     public int chunkHeight = 16;
 
     private Dictionary<Vector2Int, Chunk> chunks = new Dictionary<Vector2Int, Chunk>();
@@ -46,10 +48,12 @@ public class TilemapGenerator : MonoBehaviour
     public int mapHeight = 100;
     [Range(1f, 100f)] public float noiseScale = 20f; // Contrôle la taille des zones
 
-    [Header("Perlin Noise Offsets")] public float xOffset = 0f;
+    [Header("Perlin Noise Offsets")] 
+    public float xOffset = 0f;
     public float yOffset = 0f;
 
-    [Header("Biomes")] public Biome[] biomes; // Assigné via l'inspecteur
+    [Header("Biomes")] 
+    public Biome[] biomes; // Assigné via l'inspecteur
 
     [FormerlySerializedAs("lakeThreshold")] [Header("More Environment Settings")] [Range(0f, 1f)]
     public float environmentThreshold = 0.05f; // Probabilité d'avoir un environement interne
@@ -59,7 +63,7 @@ public class TilemapGenerator : MonoBehaviour
     [Header("Tile Assignments")] public TileBase defaultTile; // Utilisé si aucun biome n'est assigné
 
 
-    [Header("Debug")]
+    [Header("Debug Walk ability")]
     public GameObject debugNodePrefab; // Un prefab simple de cube
 
     // Private variables
@@ -224,9 +228,6 @@ private void GenerateTilesForChunk(Chunk chunk)
             float perlinValue = Mathf.PerlinNoise(xCoord, yCoord);
             Biome assignedBiome = GetBiome(perlinValue);
             bool isWalkable = assignedBiome.isWalkable;
-
-
-            // TODO: les lignes navigationGrid causent une erreur qui empêche de lancer le jeu -------------------------------------------
             
             // Générer la tuile du biome
             RuleTile ruleTileToSet = GetRuleTileForBiome(assignedBiome);
@@ -238,18 +239,20 @@ private void GenerateTilesForChunk(Chunk chunk)
                 if (!navigationGrid.ContainsKey(nodePosition))
                 {
                     navigationGrid[nodePosition] = new Node(nodePosition, isWalkable);
-                    // Créer un cube à la position du Node
-                    GameObject debugNode = Instantiate(debugNodePrefab);
-                    debugNode.transform.position = new Vector3(nodePosition.x + 0.5f, nodePosition.y + 0.5f, -2); // Centre le cube
-                    debugNode.transform.localScale = new Vector3(1, 1, 0.1f);
-
-                    // Modifier la couleur en fonction de IsWalkable
-                    Renderer renderer = debugNode.GetComponent<SpriteRenderer>();
-                    if (renderer is not null)
-                    {
-                        renderer.material.color = isWalkable ? Color.green : Color.red;
-                    }
-
+                    
+                    #region Debug isWalkable
+                    // //Crée un cube à la position du Node
+                    // GameObject debugNode = Instantiate(debugNodePrefab);
+                    // debugNode.transform.position = new Vector3(nodePosition.x + 0.5f, nodePosition.y + 0.5f, -2); // Centre le cube
+                    // debugNode.transform.localScale = new Vector3(1, 1, 0.1f);
+                    //
+                    // // Modifier la couleur en fonction de IsWalkable
+                    // Renderer renderer = debugNode.GetComponent<SpriteRenderer>();
+                    // if (renderer is not null)
+                    // {
+                    //     renderer.material.color = isWalkable ? Color.green : Color.red;
+                    // }
+                    #endregion
                 }
             }
             else
@@ -258,13 +261,13 @@ private void GenerateTilesForChunk(Chunk chunk)
             }
 
             // Génération des ressources dans ce biome
-            TryGenerateRessource(assignedBiome, chunk.tilemap, x, y);
+            TryGenerateResource(assignedBiome, chunk.tilemap, x, y);
         }
     }
 }
-    private void TryGenerateRessource(Biome biome, Tilemap tilemap, int x, int y)
+    private void TryGenerateResource(Biome biome, Tilemap tilemap, int x, int y)
     {
-        foreach (Ressource ressource in biome.ressources)
+        foreach (Resource ressource in biome.resources)
         {
             // Générer un nombre aléatoire pour savoir si on place cette ressource
             int spawnRate = UnityEngine.Random.Range(0, 101);
@@ -273,6 +276,7 @@ private void GenerateTilesForChunk(Chunk chunk)
             {
                 // tiles spécifiques pour chaque ressource
                 tilemap.SetTile(new Vector3Int(x, y, 0), ressource.ruleTile);
+                ResourceManager.resourcesManager.AddResource(ressource, new Vector2Int(x, y));
             }
         }
     }

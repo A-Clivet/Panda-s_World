@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "New Biome", menuName = "Biome")]
 public class Biome : ScriptableObject
@@ -26,8 +27,8 @@ public class Biome : ScriptableObject
     // [Tooltip("Rule Tile d'environement associé au biome.")] [CanBeNull]
     // public RuleTile environmentRuleTile;
     
-    [Header("Ressources")]
-    public Ressource[] ressources; // Liste des ressources associées à ce biome
+    [FormerlySerializedAs("ressources")] [Header("Ressources")]
+    public Resource[] resources; // Liste des ressources associées à ce biome
 
     [Header("isWalkable")]
     public bool isWalkable;
