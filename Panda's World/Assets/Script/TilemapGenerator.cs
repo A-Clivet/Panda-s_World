@@ -59,9 +59,13 @@ public class TilemapGenerator : MonoBehaviour
     [Header("Tile Assignments")] public TileBase defaultTile; // Utilisé si aucun biome n'est assigné
 
 
+    [Header("Debug")]
+    public GameObject debugNodePrefab; // Un prefab simple de cube
+
     // Private variables
     private Vector2Int currentPlayerChunkPos;
-    private Node[,] navigationGrid; // La grille de navigation pour A*
+    private Dictionary<Vector2Int, Node> navigationGrid = new Dictionary<Vector2Int, Node>(); // La grille de navigation pour A*
+
     private AStarPathfinding pathfinding;
 
     
@@ -69,24 +73,11 @@ public class TilemapGenerator : MonoBehaviour
 
     private void Start()
     {
-        navigationGrid = new Node[mapWidth, mapHeight];
-        InitializeNavigationGrid();
-        pathfinding = new AStarPathfinding(navigationGrid);
         TryGenerateChunks();
         SpawnVillage?.Invoke();
     }
 
     // Pathfinding methods ----
-    private void InitializeNavigationGrid()
-    {
-        for (int x = 0; x < mapWidth; x++)
-        {
-            for (int y = 0; y < mapHeight; y++)
-            {
-                navigationGrid[x, y] = new Node(new Vector2Int(x, y), true);
-            }
-        }
-    }
     
     public List<Vector2Int> GetPathForUnit(Vector2Int start, Vector2Int goal)
     {
@@ -232,6 +223,8 @@ private void GenerateTilesForChunk(Chunk chunk)
 
             float perlinValue = Mathf.PerlinNoise(xCoord, yCoord);
             Biome assignedBiome = GetBiome(perlinValue);
+            bool isWalkable = assignedBiome.isWalkable;
+
 
             // TODO: les lignes navigationGrid causent une erreur qui empêche de lancer le jeu -------------------------------------------
             
@@ -240,12 +233,28 @@ private void GenerateTilesForChunk(Chunk chunk)
             if (ruleTileToSet)
             {
                 chunk.tilemap.SetTile(new Vector3Int(x, y, 0), ruleTileToSet);
-                navigationGrid[worldX, worldY].IsWalkable = true; // Marquer comme navigable
+                // Ajouter un Node dans la navigationGrid uniquement si nécessaire
+                Vector2Int nodePosition = new Vector2Int(worldX, worldY);
+                if (!navigationGrid.ContainsKey(nodePosition))
+                {
+                    navigationGrid[nodePosition] = new Node(nodePosition, isWalkable);
+                    // Créer un cube à la position du Node
+                    GameObject debugNode = Instantiate(debugNodePrefab);
+                    debugNode.transform.position = new Vector3(nodePosition.x + 0.5f, nodePosition.y + 0.5f, -2); // Centre le cube
+                    debugNode.transform.localScale = new Vector3(1, 1, 0.1f);
+
+                    // Modifier la couleur en fonction de IsWalkable
+                    Renderer renderer = debugNode.GetComponent<SpriteRenderer>();
+                    if (renderer is not null)
+                    {
+                        renderer.material.color = isWalkable ? Color.green : Color.red;
+                    }
+
+                }
             }
             else
             {
                 chunk.tilemap.SetTile(new Vector3Int(x, y, 0), defaultTile);
-                navigationGrid[worldX, worldY].IsWalkable = false; // Marquer comme obstacle
             }
 
             // Génération des ressources dans ce biome

@@ -5,10 +5,13 @@ public class AgentMovement : MonoBehaviour
 {
     private Vector3 targetPosition;
     private bool hasTarget = false;
+    private Vector2Int target;
+    public float speed = 5f;
+
 
     void Start()
     {
-        
+        target = new Vector2Int((int)transform.position.x + 5, (int)transform.position.y);
       
     }
 
@@ -34,5 +37,9 @@ public class AgentMovement : MonoBehaviour
         // {
         //     
         // }
+        
+        Vector3 direction = new Vector3(target.x, target.y, 0) - transform.position;
+        transform.position += direction * (speed * Time.deltaTime);
+        
     }
 }

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6596390348266460965}
   - component: {fileID: 5562474260381813071}
   - component: {fileID: 4217407933216160027}
-  - component: {fileID: -4088221632969471972}
+  - component: {fileID: -5838209066610413076}
   m_Layer: 0
   m_Name: Panda
   m_TagString: Untagged
@@ -182,7 +182,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &-4088221632969471972
+--- !u!114 &-5838209066610413076
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -194,3 +194,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1993c49c7e388f8458c8b710a9160c1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 0.2
