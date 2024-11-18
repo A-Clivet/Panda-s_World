@@ -14,7 +14,7 @@ public class VillageGenerator : MonoBehaviour
     public BuildingGenerations buildingGenerations;
     public Transform CameraBody; // Reference to the Camera body
     public int radius = 10;
-    public RuleTile roadTile;
+    public Batiment road;
 
 
     private Vector2Int villageCenter;
@@ -30,14 +30,12 @@ public class VillageGenerator : MonoBehaviour
     {
         if (IsVillageCenterValid())
         {
-            Debug.Log("Village center is valid.");
             VillageConstruction();
             tileMapGenerator.SpawnVillage -= StartVillageGenerator;
 
         }
         else
         {
-            Debug.Log("Village center is invalid. It is too close to the sea.");
             SetRandomVillageCenter();
             tileMapGenerator.TryGenerateChunks(); // NEED : trouver une solution plus propre (via l'injection de dependances)
             StartVillageGenerator();
@@ -70,7 +68,7 @@ public class VillageGenerator : MonoBehaviour
         return true;
     }
 
-    private void VillageConstruction()
+    private void VillageConstruction() // TODO: faire en sorte que les tiles bâtiments remplacent les tiles de biome et possèdent leur propre poids A*
     {
         List<Vector2Int> villageTiles = new List<Vector2Int>();
         for (int y = -radius; y <= radius; y++)
@@ -79,18 +77,14 @@ public class VillageGenerator : MonoBehaviour
             {
                 Vector2Int tilePos = new Vector2Int(villageCenter.x + x, villageCenter.y + y);
                 villageTiles.Add(tilePos);
-                tileMapGenerator.SetTileAtPosition(tilePos, roadTile);
+                tileMapGenerator.SetTileAtPosition(tilePos, road);
             }
         }
-
-        // TODO : Mettre a jour les Visuels des Tiles (toutes)
-        for (int i = 0; i < 5; i = i)
+        
+        for (int i = 0; i < 5; i++)
         {
             Vector2Int housePosition = villageTiles[Random.Range(0, villageTiles.Count)];
-            if (buildingGenerations.BuildingCreations(housePosition))
-            {
-                i += 1;
-            }
+            buildingGenerations.BuildingCreations(housePosition);
         }
         
         VillageIsBuilt?.Invoke(villageCenter);

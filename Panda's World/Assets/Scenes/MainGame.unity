@@ -156,7 +156,7 @@ MonoBehaviour:
   buildingGenerations: {fileID: 1659005279}
   CameraBody: {fileID: 1231892141}
   radius: 10
-  roadTile: {fileID: 11400000, guid: c63f1a0ece547104c95cf3ff3954a8e1, type: 2}
+  road: {fileID: 11400000, guid: 6cfd41642bdf3bc4284074ef815b515a, type: 2}
 --- !u!4 &285982275
 Transform:
   m_ObjectHideFlags: 0

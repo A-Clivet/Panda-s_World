@@ -30,7 +30,9 @@ public class Biome : ScriptableObject
     [FormerlySerializedAs("ressources")] [Header("Ressources")]
     public Resource[] resources; // Liste des ressources associées à ce biome
 
-    [Header("isWalkable")]
-    public bool isWalkable;
+    [Header("Walk ability")]
+    public bool isWalkable = true;
+    public float movementCost = 1f; // Coût de déplacement
 
+    
 }

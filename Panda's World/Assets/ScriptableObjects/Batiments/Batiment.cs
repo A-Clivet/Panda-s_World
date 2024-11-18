@@ -18,6 +18,10 @@ public class Batiment : ScriptableObject
 
     [Tooltip("Prix associé au Batiment.")] 
     public int cost;
+    
+    [Header("Walk ability")]
+    public bool isWalkable;
+    public float movementCost = 1f; // Coût de déplacement
 
 
 

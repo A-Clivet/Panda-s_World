@@ -39,22 +39,22 @@ public class BuildingGenerations : MonoBehaviour
             for (int x = -batiment.sizeX / 2; x <= batiment.sizeX / 2; x++)
             {
                 Vector2Int tilePos = new Vector2Int(position.x + x, position.y + y);
-                tileMapGenerator.SetTileAtPosition(tilePos, batiment.ruleTile);
+                tileMapGenerator.SetTileAtPosition(tilePos, batiment);
                 if (y == -batiment.sizeY / 2)
                 {
-                    tileMapGenerator.SetTileAtPosition(new Vector2Int(position.x + x, position.y + y - 1 ), Route.ruleTile);
+                    tileMapGenerator.SetTileAtPosition(new Vector2Int(position.x + x, position.y + y - 1 ), Route);
                 }
                 if (x == -batiment.sizeX / 2)
                 {
-                    tileMapGenerator.SetTileAtPosition(new Vector2Int(position.x + x - 1, position.y + y), Route.ruleTile);
+                    tileMapGenerator.SetTileAtPosition(new Vector2Int(position.x + x - 1, position.y + y), Route);
                 }
                 if (y == batiment.sizeY/2)
                 {
-                    tileMapGenerator.SetTileAtPosition(new Vector2Int(position.x + x, position.y + y + 1), Route.ruleTile);
+                    tileMapGenerator.SetTileAtPosition(new Vector2Int(position.x + x, position.y + y + 1), Route);
                 }
                 if (x == batiment.sizeX/2)
                 {
-                    tileMapGenerator.SetTileAtPosition(new Vector2Int(position.x + x + 1, position.y + y), Route.ruleTile);
+                    tileMapGenerator.SetTileAtPosition(new Vector2Int(position.x + x + 1, position.y + y), Route);
                 }
                
             }

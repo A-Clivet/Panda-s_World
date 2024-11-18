@@ -15,6 +15,7 @@ MonoBehaviour:
   biomeName: Montagne
   threshold: 1
   ruleTile: {fileID: 11400000, guid: 5d2f83f1bd761a841be5edaadd8eef6b, type: 2}
-  ressources:
+  resources:
   - {fileID: 11400000, guid: c1d6356d001dfe144960b55df5ec06f9, type: 2}
   isWalkable: 1
+  movementCost: 6

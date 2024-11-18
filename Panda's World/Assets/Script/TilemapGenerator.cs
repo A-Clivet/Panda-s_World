@@ -8,16 +8,20 @@ using Random = UnityEngine.Random;
 
 public class Node
 {
-    public Vector2Int Position;
+    public Vector2Int Position { get; private set; }
     public bool IsWalkable;
+    public float Weight;
+
     public Node Parent;
     public float G, H;
     public float F => G + H;
 
-    public Node(Vector2Int position, bool isWalkable)
+
+    public Node(Vector2Int position, bool isWalkable, float weight = 1f)
     {
         Position = position;
         IsWalkable = isWalkable;
+        Weight = weight;
     }
 }
 
@@ -28,12 +32,10 @@ public class TilemapGenerator : MonoBehaviour
     public event Action OnchunkGenerated;
     public event Action<Resource, Vector2Int> NewResourceGenerated;
 
-    [Header("Tilemap Settings")] 
-    public Tilemap tilemapPrefab; // Prefab de la Tilemap pour chaque chunk
+    [Header("Tilemap Settings")] public Tilemap tilemapPrefab; // Prefab de la Tilemap pour chaque chunk
     public Grid Grid; // Prefab de la Tilemap pour chaque chunk
 
-    [Header("Chunk Settings")] 
-    public int chunkWidth = 16;
+    [Header("Chunk Settings")] public int chunkWidth = 16;
     public int chunkHeight = 16;
 
     private Dictionary<Vector2Int, Chunk> chunks = new Dictionary<Vector2Int, Chunk>();
@@ -44,17 +46,14 @@ public class TilemapGenerator : MonoBehaviour
     [Header("Chunk Settings")]
     public int viewDistanceInChunks = 4; // Nombre de chunks à charger autour du joueur/caméra
 
-    [Header("Map Settings")] 
-    public int mapWidth = 100;
+    [Header("Map Settings")] public int mapWidth = 100;
     public int mapHeight = 100;
     [Range(1f, 100f)] public float noiseScale = 20f; // Contrôle la taille des zones
 
-    [Header("Perlin Noise Offsets")] 
-    public float xOffset = 0f;
+    [Header("Perlin Noise Offsets")] public float xOffset = 0f;
     public float yOffset = 0f;
 
-    [Header("Biomes")] 
-    public Biome[] biomes; // Assigné via l'inspecteur
+    [Header("Biomes")] public Biome[] biomes; // Assigné via l'inspecteur
 
     [FormerlySerializedAs("lakeThreshold")] [Header("More Environment Settings")] [Range(0f, 1f)]
     public float environmentThreshold = 0.05f; // Probabilité d'avoir un environement interne
@@ -64,16 +63,17 @@ public class TilemapGenerator : MonoBehaviour
     [Header("Tile Assignments")] public TileBase defaultTile; // Utilisé si aucun biome n'est assigné
 
 
-    [Header("Debug Walk ability")]
-    public GameObject debugNodePrefab; // Un prefab simple de cube
+    [Header("Debug Walk ability")] public GameObject debugNodePrefab; // Un prefab simple de cube
 
     // Private variables
     private Vector2Int currentPlayerChunkPos;
-    private Dictionary<Vector2Int, Node> navigationGrid = new Dictionary<Vector2Int, Node>(); // La grille de navigation pour A*
+
+    private Dictionary<Vector2Int, Node>
+        navigationGrid = new Dictionary<Vector2Int, Node>(); // La grille de navigation pour A*
 
     private AStarPathfinding pathfinding;
 
-    
+
     // --- STRUCTURES ---
 
     private void Start()
@@ -83,23 +83,23 @@ public class TilemapGenerator : MonoBehaviour
     }
 
     // Pathfinding methods ----
-    
+
     public List<Vector2Int> GetPathForUnit(Vector2Int start, Vector2Int goal)
     {
         return pathfinding.FindPath(start, goal);
     }
-    
+
     // ------------------------
 
-    
+
     // --- CHUNK MANAGEMENT ---
-    
-        private void SetRandomOffSet()
+
+    private void SetRandomOffSet()
     {
         xOffset = Random.Range(3000, 13000);
         yOffset = Random.Range(3000, 13000);
     }
-        
+
     private void Update()
     {
         TryGenerateChunks();
@@ -137,7 +137,6 @@ public class TilemapGenerator : MonoBehaviour
 
         // Décharger les chunks qui ne sont plus dans la zone visible
         UnloadUnnecessaryChunks(chunksToLoad);
-        
     }
 
     void GetChunksAroundPlayer(Vector2Int playerChunkPos, List<Vector2Int> chunksToLoad)
@@ -157,7 +156,7 @@ public class TilemapGenerator : MonoBehaviour
             }
         }
     }
-    
+
     void GenerateChunks(Vector2Int chunkPos)
     {
         if (!chunks.ContainsKey(chunkPos))
@@ -171,13 +170,13 @@ public class TilemapGenerator : MonoBehaviour
             chunks[chunkPos].tilemap.gameObject.transform.parent.gameObject.SetActive(true);
         }
     }
-    
+
     void UnloadUnnecessaryChunks(List<Vector2Int> chunksToLoad)
     {
         foreach (Vector2Int loadedChunk in chunks.Keys)
         {
             if (chunksToLoad.Contains(loadedChunk)) continue;
-            
+
             UnloadChunk(loadedChunk);
         }
     }
@@ -220,58 +219,68 @@ public class TilemapGenerator : MonoBehaviour
     }
 
 
-private void GenerateTilesForChunk(Chunk chunk)
-{
-    for (int y = 0; y < chunkHeight; y++)
+    private void GenerateTilesForChunk(Chunk chunk)
     {
-        for (int x = 0; x < chunkWidth; x++)
+        for (int y = 0; y < chunkHeight; y++)
         {
-            int worldX = chunk.chunkX * chunkWidth + x;
-            int worldY = chunk.chunkY * chunkHeight + y;
-
-            float xCoord = (float)worldX / mapWidth * noiseScale + xOffset;
-            float yCoord = (float)worldY / mapHeight * noiseScale + yOffset;
-
-            float perlinValue = Mathf.PerlinNoise(xCoord, yCoord);
-            Biome assignedBiome = GetBiome(perlinValue);
-            bool isWalkable = assignedBiome.isWalkable;
-            
-            // Générer la tuile du biome
-            RuleTile ruleTileToSet = GetRuleTileForBiome(assignedBiome);
-            if (ruleTileToSet)
+            for (int x = 0; x < chunkWidth; x++)
             {
-                chunk.tilemap.SetTile(new Vector3Int(x, y, 0), ruleTileToSet);
-                // Ajouter un Node dans la navigationGrid uniquement si nécessaire
-                Vector2Int nodePosition = new Vector2Int(worldX, worldY);
-                if (!navigationGrid.ContainsKey(nodePosition))
+                int worldX = chunk.chunkX * chunkWidth + x;
+                int worldY = chunk.chunkY * chunkHeight + y;
+
+                float xCoord = (float)worldX / mapWidth * noiseScale + xOffset;
+                float yCoord = (float)worldY / mapHeight * noiseScale + yOffset;
+
+                float perlinValue = Mathf.PerlinNoise(xCoord, yCoord);
+                Biome assignedBiome = GetBiome(perlinValue);
+                
+                bool isWalkable = assignedBiome.isWalkable;
+                float movementCost = assignedBiome.movementCost;
+
+
+                // Générer la tuile du biome
+                RuleTile ruleTileToSet = GetRuleTileForBiome(assignedBiome);
+                if (ruleTileToSet)
                 {
-                    navigationGrid[nodePosition] = new Node(nodePosition, isWalkable);
-                    
-                    #region Debug isWalkable
-                    // //Crée un cube à la position du Node
-                    // GameObject debugNode = Instantiate(debugNodePrefab);
-                    // debugNode.transform.position = new Vector3(nodePosition.x + 0.5f, nodePosition.y + 0.5f, -2); // Centre le cube
-                    // debugNode.transform.localScale = new Vector3(1, 1, 0.1f);
-                    //
-                    // // Modifier la couleur en fonction de IsWalkable
-                    // Renderer renderer = debugNode.GetComponent<SpriteRenderer>();
-                    // if (renderer is not null)
-                    // {
-                    //     renderer.material.color = isWalkable ? Color.green : Color.red;
-                    // }
-                    #endregion
-                }
-            }
-            else
-            {
-                chunk.tilemap.SetTile(new Vector3Int(x, y, 0), defaultTile);
-            }
+                    chunk.tilemap.SetTile(new Vector3Int(x, y, 0), ruleTileToSet);
+                    // Ajouter un Node dans la navigationGrid uniquement si nécessaire
+                    Vector2Int nodePosition = new Vector2Int(worldX, worldY);
+                    if (!navigationGrid.ContainsKey(nodePosition))
+                    {
+                        navigationGrid[nodePosition] = new Node(nodePosition, isWalkable, movementCost);
 
-            // Génération des ressources dans ce biome
-            TryGenerateResource(assignedBiome, chunk.tilemap, x, y);
+                        #region Debug isWalkable
+
+                        //Crée un cube à la position du Node
+                        GameObject debugNode = Instantiate(debugNodePrefab);
+                        debugNode.transform.position = new Vector3(nodePosition.x + 0.5f, nodePosition.y + 0.5f, -2); // Centre le cube
+                        debugNode.transform.localScale = new Vector3(1, 1, 0.1f);
+                        
+                        // Modifier la couleur en fonction de IsWalkable
+                        Renderer renderer = debugNode.GetComponent<SpriteRenderer>();
+                        if (renderer is not null)
+                        {
+                            renderer.material.color = isWalkable ? Color.green : Color.red;
+                            if (isWalkable)
+                            {
+                                renderer.material.color = new Color(0, 1/movementCost, 0, 1f);
+                            }
+                        }
+
+                        #endregion
+                    }
+                }
+                else
+                {
+                    chunk.tilemap.SetTile(new Vector3Int(x, y, 0), defaultTile);
+                }
+
+                // Génération des ressources dans ce biome
+                TryGenerateResource(assignedBiome, chunk.tilemap, x, y);
+            }
         }
     }
-}
+
     private void TryGenerateResource(Biome biome, Tilemap tilemap, int x, int y)
     {
         foreach (Resource ressource in biome.resources)
@@ -283,7 +292,7 @@ private void GenerateTilesForChunk(Chunk chunk)
             {
                 // tiles spécifiques pour chaque ressource
                 tilemap.SetTile(new Vector3Int(x, y, 0), ressource.ruleTile);
-                NewResourceGenerated?.Invoke(ressource, new Vector2Int(x, y));
+                //NewResourceGenerated?.Invoke(ressource, new Vector2Int(x, y)); // TODO: problèmes avec les positions
             }
         }
     }
@@ -322,10 +331,11 @@ private void GenerateTilesForChunk(Chunk chunk)
 
             return tile;
         }
+
         return null; // Return null if the chunk is not loaded
     }
 
-    public void SetTileAtPosition(Vector2Int position, RuleTile tile)
+    public void SetTileAtPosition(Vector2Int position, Batiment building)
     {
         int chunkX = position.x / chunkWidth;
         int chunkY = position.y / chunkHeight;
@@ -336,7 +346,25 @@ private void GenerateTilesForChunk(Chunk chunk)
             Chunk chunk = chunks[chunkPos];
             int localX = position.x % chunkWidth;
             int localY = position.y % chunkHeight;
-            chunk.tilemap.SetTile(new Vector3Int(localX, localY, 0), tile);
+            chunk.tilemap.SetTile(new Vector3Int(localX, localY, 0), building.ruleTile);
+            
+            // Récupérer et modifier la Node
+            Node node = GetNodeAtPosition(position);
+            if (node is not null)
+            {
+                // Modifie les propriétés de la Node
+                node.IsWalkable = building.isWalkable;
+                node.Weight = building.movementCost; 
+            }
+
         }
+    }
+    public Node GetNodeAtPosition(Vector2Int position)
+    {
+        if (navigationGrid.TryGetValue(position, out Node node))
+        {
+            return node;
+        }
+        return null;
     }
 }

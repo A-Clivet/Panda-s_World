@@ -36,10 +36,10 @@ public class AStarPathfinding
                 if (!neighbor.IsWalkable || closedList.Contains(neighbor))
                     continue;
 
-                float newMovementCost = currentNode.G + GetDistance(currentNode, neighbor);
-                if (newMovementCost < neighbor.G || !openList.Contains(neighbor))
+                float tentativeGCost = currentNode.G + GetDistance(currentNode, neighbor) * neighbor.Weight;
+                if (tentativeGCost < neighbor.G || !openList.Contains(neighbor))
                 {
-                    neighbor.G = newMovementCost;
+                    neighbor.G = tentativeGCost;
                     neighbor.H = GetHeuristic(neighbor.Position, goal);
                     neighbor.Parent = currentNode;
 

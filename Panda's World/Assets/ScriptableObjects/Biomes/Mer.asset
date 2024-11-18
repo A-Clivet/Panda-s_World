@@ -15,4 +15,6 @@ MonoBehaviour:
   biomeName: Mer
   threshold: 0.2
   ruleTile: {fileID: 11400000, guid: 1e76f1732eedb98458e8ce8bc6db6939, type: 2}
-  ressources: []
+  resources: []
+  isWalkable: 0
+  movementCost: 1
