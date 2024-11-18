@@ -3,14 +3,25 @@ using UnityEngine;
 
 public class AgentMovement : MonoBehaviour
 {
-    public float speed = 5f;
+    public float speed;
+    
+    
     private List<Vector2Int> path;
     private int currentPathIndex;
     private TilemapGenerator tilemapGenerator;
+    private ResourceManager resourceManager;
+
 
     private void Start()
     {
         tilemapGenerator = FindObjectOfType<TilemapGenerator>();
+        resourceManager = FindObjectOfType<ResourceManager>();
+
+        // if (resourceManager is not null && resourceManager.DiamondPos.Count > 0)
+        // {
+        //     SetDestination(resourceManager.DiamondPos[0]);
+        //     resourceManager.DiamondPos.RemoveAt(0);
+        // }
     }
 
     private void Update()
@@ -33,4 +44,6 @@ public class AgentMovement : MonoBehaviour
         path = tilemapGenerator.GetPathForUnit(start, destination);
         currentPathIndex = 0;
     }
+    
+    
 }

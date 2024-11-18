@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
-using Random = Unity.Mathematics.Random;
+using Random = UnityEngine.Random;
 
 
 public class Node
@@ -26,6 +26,7 @@ public class TilemapGenerator : MonoBehaviour
 {
     public event Action SpawnVillage;
     public event Action OnchunkGenerated;
+    public event Action<Resource, Vector2Int> NewResourceGenerated;
 
     [Header("Tilemap Settings")] 
     public Tilemap tilemapPrefab; // Prefab de la Tilemap pour chaque chunk
@@ -93,6 +94,12 @@ public class TilemapGenerator : MonoBehaviour
     
     // --- CHUNK MANAGEMENT ---
     
+        private void SetRandomOffSet()
+    {
+        xOffset = Random.Range(3000, 13000);
+        yOffset = Random.Range(3000, 13000);
+    }
+        
     private void Update()
     {
         TryGenerateChunks();
@@ -276,7 +283,7 @@ private void GenerateTilesForChunk(Chunk chunk)
             {
                 // tiles spécifiques pour chaque ressource
                 tilemap.SetTile(new Vector3Int(x, y, 0), ressource.ruleTile);
-                ResourceManager.resourcesManager.AddResource(ressource, new Vector2Int(x, y));
+                NewResourceGenerated?.Invoke(ressource, new Vector2Int(x, y));
             }
         }
     }
