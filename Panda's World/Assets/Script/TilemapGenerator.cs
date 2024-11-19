@@ -251,21 +251,21 @@ public class TilemapGenerator : MonoBehaviour
 
                         #region Debug isWalkable
 
-                        //Crée un cube à la position du Node
-                        GameObject debugNode = Instantiate(debugNodePrefab);
-                        debugNode.transform.position = new Vector3(nodePosition.x + 0.5f, nodePosition.y + 0.5f, -2); // Centre le cube
-                        debugNode.transform.localScale = new Vector3(1, 1, 0.1f);
-                        
-                        // Modifier la couleur en fonction de IsWalkable
-                        Renderer renderer = debugNode.GetComponent<SpriteRenderer>();
-                        if (renderer is not null)
-                        {
-                            renderer.material.color = isWalkable ? Color.green : Color.red;
-                            if (isWalkable)
-                            {
-                                renderer.material.color = new Color(0, 1/movementCost, 0, 1f);
-                            }
-                        }
+                        // //Crée un cube à la position du Node
+                        // GameObject debugNode = Instantiate(debugNodePrefab);
+                        // debugNode.transform.position = new Vector3(nodePosition.x + 0.5f, nodePosition.y + 0.5f, -2); // Centre le cube
+                        // debugNode.transform.localScale = new Vector3(1, 1, 0.1f);
+                        //
+                        // // Modifier la couleur en fonction de IsWalkable
+                        // Renderer renderer = debugNode.GetComponent<SpriteRenderer>();
+                        // if (renderer is not null)
+                        // {
+                        //     renderer.material.color = isWalkable ? Color.green : Color.red;
+                        //     if (isWalkable)
+                        //     {
+                        //         renderer.material.color = new Color(0, 1/movementCost, 0, 1f);
+                        //     }
+                        // }
 
                         #endregion
                     }
